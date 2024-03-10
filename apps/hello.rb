@@ -3,4 +3,4 @@ x = 0
     b = sys_read()
     x = x * 2 + b
 }
-sys_write("x = #{x.to_s(2)}b")
+sys_write("x = %010bb" % x)

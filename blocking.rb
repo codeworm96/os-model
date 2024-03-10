@@ -11,13 +11,26 @@ class OS
     def sys_read()
     end
 
-    def sys_write()
+    def sys_write(s)
+    end
+
+    def sys_spawn(*args, &proc)
     end
 end
 
 class BlockingOS < OS
+    Process = Struct.new(:proc, :args)
+
     def run(init)
-        instance_eval(init)
+        init_proc = Proc.new {
+            instance_eval(init)
+        }
+        @procs = [Process.new(init_proc, [])]
+        while !@procs.empty?
+            ix = Random.rand(@procs.length)
+            current = @procs.delete_at(ix)
+            current.proc.call(*current.args)
+        end
     end
 
     def sys_read()
@@ -26,5 +39,9 @@ class BlockingOS < OS
 
     def sys_write(s)
         @buf += s
+    end
+
+    def sys_spawn(*args, &proc)
+        @procs.append(Process.new(proc, args))
     end
 end
