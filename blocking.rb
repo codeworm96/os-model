@@ -1,30 +1,12 @@
-require './loader'
-
-class OS
-    def initialize(filename)
-        init = Loader.load(filename)
-        @buf = ""
-        run(init)
-        puts @buf
-    end
-
-    def sys_read()
-    end
-
-    def sys_write(s)
-    end
-
-    def sys_spawn(*args, &proc)
-    end
-end
+require './os'
 
 class BlockingOS < OS
     Process = Struct.new(:proc, :args)
 
     def run(init)
-        init_proc = Proc.new {
+        init_proc = Proc.new do
             instance_eval(init)
-        }
+        end
         @procs = [Process.new(init_proc, [])]
         while !@procs.empty?
             ix = Random.rand(@procs.length)
